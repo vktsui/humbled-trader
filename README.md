@@ -9,7 +9,7 @@ Implementation of the [Humbled Trader setup guide](https://www.humbledtrader.com
 | **TradingView Desktop** | Paid plan (Essential+). Browser version does **not** work. |
 | **Node.js 18+** | For [tradingview-mcp](https://github.com/tradesdontlie/tradingview-mcp) |
 | **Cursor or Claude Code** | With MCP support |
-| **Gmail App Password** (optional) | For email alerts to vktsui@gmail.com (Step 11) |
+| **Email backend** (optional) | Resend API key (recommended), SendGrid, or Gmail SMTP — for alerts to vktsui@gmail.com (Step 11) |
 
 ## Quick start
 
@@ -25,7 +25,7 @@ cd ~/tradingview-mcp && npm install
 ```bash
 cd ~/humbled-trader
 cp .env.example .env
-# Edit .env — add Gmail App Password if you want email alerts
+# Edit .env — add a Resend API key (or SendGrid/SMTP) for email alerts
 ```
 
 MCP is preconfigured in `.cursor/mcp.json`. For global Cursor config, merge the `tradingview` block into `~/.cursor/mcp.json`.

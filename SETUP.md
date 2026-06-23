@@ -113,9 +113,15 @@ Agent prompt: `prompts/10-regime-filter.md`
 
 ## Step 11 — Email alerts
 
-1. Create a Gmail **App Password**: https://myaccount.google.com/apppasswords (requires 2FA)
-2. Copy `.env.example` → `.env` and set `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM` (recipient `EMAIL_TO` defaults to `vktsui@gmail.com`)
-3. Run `npm run premarket` to test delivery
+Sender auto-selects a backend from `.env` (Resend → SendGrid → SMTP).
+
+**Recommended (no password):** sign up at https://resend.com, create an API key, then set in `.env`:
+```
+RESEND_API_KEY=re_xxxx
+EMAIL_FROM=onboarding@resend.dev
+EMAIL_TO=vktsui@gmail.com
+```
+Run `npm run premarket` to test delivery.
 
 Full prompt: `prompts/11-email.md`. Shared sender: `scripts/lib/send_email.py`.
 
