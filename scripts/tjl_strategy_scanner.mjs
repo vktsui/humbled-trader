@@ -88,26 +88,18 @@ function todayEtStartSec() {
   return Math.floor(et4am.getTime() / 1000);
 }
 
-async function sendTelegram(body) {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
-  if (!token || !chatId) {
-    console.error("Telegram skipped: missing .env credentials");
-    return;
-  }
-  const params = new URLSearchParams({
-    chat_id: chatId,
-    text: body,
-    parse_mode: "Markdown",
-  });
+async function sendEmail(subject, body) {
+  const sender = join(__dirname, "lib", "send_email.py");
   try {
-    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params,
+    await new Promise((resolve, reject) => {
+      const child = execFile("python3", [sender, subject], { cwd: ROOT }, (err) =>
+        err ? reject(err) : resolve()
+      );
+      child.stdin.write(body);
+      child.stdin.end();
     });
   } catch (e) {
-    console.error("Telegram send failed:", e.message);
+    console.error("Email send failed:", e.message);
   }
 }
 
@@ -214,18 +206,19 @@ async function main() {
   if (hits.length === 0 && !firstRunToday && !newHit) shouldNotify = false;
 
   if (shouldNotify) {
+    const subject = `TJL Watchlist — ${label} ET (${hits.length} hit${hits.length === 1 ? "" : "s"})`;
     let body;
     if (hits.length === 0) {
-      body = `🎯 *TJL Watchlist* — ${label} ET\nNo TJL hits this run.`;
+      body = `TJL Watchlist — ${label} ET\n\nNo TJL hits this run.`;
     } else {
-      body = `🎯 *TJL Watchlist* — ${label} ET\n` + hits
+      body = `TJL Watchlist — ${label} ET\n\n` + hits
         .map(
           (h) =>
-            `• ${h.symbol} @ $${h.curr_price.toFixed(2)} (PMH $${h.pmh.toFixed(2)}, prev_high $${h.prev_daily_high.toFixed(2)}, SMA200 $${h.sma200.toFixed(2)})`
+            `  ${h.symbol} @ $${h.curr_price.toFixed(2)} (PMH $${h.pmh.toFixed(2)}, prev_high $${h.prev_daily_high.toFixed(2)}, SMA200 $${h.sma200.toFixed(2)})`
         )
         .join("\n");
     }
-    await sendTelegram(body);
+    await sendEmail(subject, body);
     saveState({ day: stamp, hits: hits.map((h) => h.symbol), firstRunSent: true });
   } else {
     console.log("Telegram gated: no new hits and not first run of day.");

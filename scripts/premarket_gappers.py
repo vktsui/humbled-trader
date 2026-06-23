@@ -13,11 +13,13 @@ import os
 import re
 import sys
 import urllib.error
-import urllib.parse
 import urllib.request
 from datetime import date, datetime
 from html import unescape
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from send_email import send_email  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 MIN_PREMARKET_VOLUME = 50_000
@@ -46,6 +48,7 @@ def fetch(url: str, timeout: int = 30) -> str:
 def parse_yahoo_gainers(html: str) -> list[dict]:
     """Parse gainers from Yahoo markets page (table rows)."""
     rows: list[dict] = []
+    # Match table row chunks with ticker links
     for block in re.findall(r"<tr[^>]*>.*?</tr>", html, flags=re.S | re.I):
         sym_m = re.search(r'href="/quote/([A-Z0-9.\-^]+)/"', block, re.I)
         if not sym_m:
@@ -109,23 +112,6 @@ def fetch_benzinga_catalyst(symbol: str) -> tuple[str | None, list[str]]:
     return catalyst, headlines[:2]
 
 
-def send_telegram(body: str) -> None:
-    token = os.environ.get("TELEGRAM_BOT_TOKEN")
-    chat_id = os.environ.get("TELEGRAM_CHAT_ID")
-    if not token or not chat_id:
-        print("Telegram skipped: missing credentials in .env", file=sys.stderr)
-        return
-    data = urllib.parse.urlencode(
-        {"chat_id": chat_id, "text": body, "parse_mode": "Markdown"}
-    ).encode()
-    url = f"https://api.telegram.org/bot{token}/sendMessage"
-    req = urllib.request.Request(url, data=data, method="POST")
-    try:
-        urllib.request.urlopen(req, timeout=15)
-    except urllib.error.URLError as e:
-        print(f"Telegram send failed: {e}", file=sys.stderr)
-
-
 def main() -> int:
     load_env()
     today = date.today().isoformat()
@@ -179,13 +165,13 @@ def main() -> int:
     print(summary)
 
     if results:
-        lines = [f"📊 *Premarket Gappers* — {today}"]
+        lines = [f"Premarket Gappers — {today}", ""]
         for g in results:
             cat = f" — {g['catalyst']}" if g["catalyst"] else ""
             lines.append(
-                f"• {g['symbol']} ${g['price']:.2f} +{g['gap_pct']:.1f}%{cat}"
+                f"  {g['symbol']}  ${g['price']:.2f}  +{g['gap_pct']:.1f}%{cat}"
             )
-        send_telegram("\n".join(lines))
+        send_email(f"Premarket Gappers — {today}", "\n".join(lines))
 
     return 0
 

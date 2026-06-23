@@ -88,7 +88,7 @@ Requires TradingView running 10:00–15:30 ET with CDP port open.
 npm run tjl
 ```
 
-Full agent prompt: `prompts/07-scanner-b.md`.
+Full agent prompt: `prompts/07-scanner-b.md`
 
 ---
 
@@ -111,11 +111,13 @@ Agent prompt: `prompts/10-regime-filter.md`
 
 ---
 
-## Step 11 — Telegram
+## Step 11 — Email alerts
 
-1. Message [@BotFather](https://t.me/BotFather) on Telegram → `/newbot`
-2. Copy token and chat ID into `.env`
+1. Create a Gmail **App Password**: https://myaccount.google.com/apppasswords (requires 2FA)
+2. Copy `.env.example` → `.env` and set `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM` (recipient `EMAIL_TO` defaults to `vktsui@gmail.com`)
 3. Run `npm run premarket` to test delivery
+
+Full prompt: `prompts/11-email.md`. Shared sender: `scripts/lib/send_email.py`.
 
 ---
 

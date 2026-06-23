@@ -9,7 +9,7 @@ Implementation of the [Humbled Trader setup guide](https://www.humbledtrader.com
 | **TradingView Desktop** | Paid plan (Essential+). Browser version does **not** work. |
 | **Node.js 18+** | For [tradingview-mcp](https://github.com/tradesdontlie/tradingview-mcp) |
 | **Cursor or Claude Code** | With MCP support |
-| **Telegram bot** (optional) | For phone alerts (Step 11) |
+| **Gmail App Password** (optional) | For email alerts to vktsui@gmail.com (Step 11) |
 
 ## Quick start
 
@@ -25,7 +25,7 @@ cd ~/tradingview-mcp && npm install
 ```bash
 cd ~/humbled-trader
 cp .env.example .env
-# Edit .env — add Telegram token/chat ID if you want alerts
+# Edit .env — add Gmail App Password if you want email alerts
 ```
 
 MCP is preconfigured in `.cursor/mcp.json`. For global Cursor config, merge the `tradingview` block into `~/.cursor/mcp.json`.
@@ -71,7 +71,7 @@ npm run install-schedule   # macOS launchd automation (Steps 6 & 8)
 | Automate Scanner B | `launchd/com.humbledtrader.tjl.plist.template` |
 | Pine backtest | `pine/trend_join_breakout_v4_no_regime.pine`, `prompts/09-backtest.md` |
 | Regime filter test | `prompts/10-regime-filter.md` |
-| Telegram alerts | Built into both scanners via `.env` |
+| Email alerts | `scripts/lib/send_email.py`, built into both scanners via `.env` |
 
 ## Output files
 
