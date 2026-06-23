@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "tradingview": {
+      "command": "/Users/vkt/.local/node-v22.22.3/bin/node",
+      "args": [
+        "/Users/vkt/tradingview-mcp/versions/v1/src/server.js"
+      ]
+    }
+  }
+}

@@ -1,0 +1,51 @@
+//@version=5
+strategy("Demo TJL Strategy", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=10, initial_capital=100000, commission_type=strategy.commission.percent, commission_value=0.01)
+
+// Trend Join Long — base version (no SPY/QQQ regime filter)
+// Matches Humbled Trader Scanner B criteria on 5-min chart with extended hours.
+
+grp = "Session"
+forceCloseHour = input.int(15, "Force flat hour (ET)", minval=10, maxval=16, group=grp)
+forceCloseMin = input.int(55, "Force flat minute", minval=0, maxval=59, group=grp)
+
+smaLen = input.int(200, "Daily SMA length", minval=50, group=grp)
+
+inRth = not na(time(timeframe.period, "0930-1600:1234567"))
+inExt = not na(time(timeframe.period, "0400-2000:1234567"))
+
+dailyClose = request.security(syminfo.tickerid, "D", close[1], lookahead=barmerge.lookahead_off)
+dailyHigh = request.security(syminfo.tickerid, "D", high[1], lookahead=barmerge.lookahead_off)
+dailySma = request.security(syminfo.tickerid, "D", ta.sma(close, smaLen)[1], lookahead=barmerge.lookahead_off)
+
+var float pmh = na
+var float dayHigh = na
+newDay = ta.change(time("D"))
+
+if newDay
+    pmh := na
+    dayHigh := na
+
+if inExt
+    pmh := na(pmh) ? high : math.max(pmh, high)
+dayHigh := na(dayHigh) ? high : math.max(dayHigh, high)
+
+dailyBiasOk = close > dailyHigh and dailyClose > dailySma
+breakout = close > pmh and close > dayHigh
+entryTrigger = dailyBiasOk and breakout and inRth
+
+atForceClose = hour == forceCloseHour and minute >= forceCloseMin
+
+canEnter = entryTrigger and strategy.position_size == 0 and not atForceClose
+
+if canEnter
+    strategy.entry("TJL Long", strategy.long)
+
+if strategy.position_size > 0
+    strategy.exit("TJL Exit", "TJL Long", stop=low[1], limit=close * 1.02)
+
+if atForceClose and strategy.position_size > 0
+    strategy.close("TJL Long", comment="EOD flat")
+
+plot(pmh, "PMH", color=color.new(color.orange, 0), style=plot.style_linebr)
+plot(dailyHigh, "Prev Daily High", color=color.new(color.red, 40), style=plot.style_linebr)
+plot(dailySma, "SMA200 D", color=color.new(color.blue, 50))

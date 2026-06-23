@@ -1,0 +1,14 @@
+{
+  "name": "humbled-trader",
+  "version": "1.0.0",
+  "description": "Humbled Trader workflow: TradingView MCP scanners, automation, and Pine backtests",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "premarket": "python3 scripts/premarket_gappers.py",
+    "tjl": "node scripts/tjl_strategy_scanner.mjs",
+    "tv:status": "bash scripts/launch_tradingview.sh status",
+    "tv:launch": "bash scripts/launch_tradingview.sh launch",
+    "install-schedule": "bash scripts/install_launchd.sh"
+  }
+}

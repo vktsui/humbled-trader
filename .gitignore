@@ -1,0 +1,12 @@
+.env
+.DS_Store
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+data/
+output/
+premarket_gappers_*.json
+tjl_watchlist_*.json
+.state/
+*.log
