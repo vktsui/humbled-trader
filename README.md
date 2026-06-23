@@ -65,7 +65,7 @@ npm run install-schedule   # macOS launchd automation (Steps 6 & 8)
 |---|---|
 | Install MCP | `SETUP.md`, `.cursor/mcp.json`, `scripts/launch_tradingview.sh` |
 | Basic chart prompts | `prompts/02-basic-prompts.md` |
-| Scanner A — premarket gappers | `scripts/premarket_gappers.py` |
+| Scanner A — premarket gappers (NASDAQ market-movers) | `scripts/premarket_gappers.py` |
 | Automate Scanner A | `launchd/`, `scripts/catchup_premarket.sh` |
 | Scanner B — TJL strategy | `scripts/tjl_strategy_scanner.mjs` |
 | Automate Scanner B | `launchd/com.humbledtrader.tjl.plist.template` |
@@ -91,7 +91,8 @@ The blog targets **Claude Code** (`~/.claude/.mcp.json`). This project uses **Cu
 | `cdp_connected: false` | Quit TradingView fully, relaunch with `--remote-debugging-port=9222` |
 | Port 9222 in use | Change `CDP_PORT` in `.env` and relaunch with new port |
 | Scanner B fails | TradingView must be open with an active chart during market hours (10:00–15:30 ET) |
-| Yahoo parse empty | Yahoo HTML changed — update `parse_yahoo_gainers()` in the Python script |
+| `CERTIFICATE_VERIFY_FAILED` | Run `/Applications/Python 3.12/Install Certificates.command` (or `pip install certifi`) |
+| Scanner A returns 0 names | Premarket opens 4:00 AM ET; before then NASDAQ movers may be empty |
 
 ## Disclaimer
 
